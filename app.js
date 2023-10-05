@@ -1,16 +1,13 @@
 const express = require("express");
 const morgan = require("morgan");
 
+const productRouter = require("./routes/productRouter");
+
 const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
 
-const connectionSting = app.get("/api/v1", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Hello from the Eazy Purchase server!",
-  });
-});
+app.use("/api/v1/products", productRouter);
 
 module.exports = app;
