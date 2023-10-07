@@ -11,15 +11,22 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+// All routes
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/categories", categoryRouter);
 
-app.all("*", (req, res) => {
+// Middleware for handling unhandled routes
+app.all("*", (req, res, next) => {
   const message = `Can't find ${req.originalUrl} for ${req.method} on the sever`;
 
-  res.status(404).json({
-    status: "fail",
-    message,
+  next(message);
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  res.status(500).json({
+    status: "error",
+    error: err,
   });
 });
 
