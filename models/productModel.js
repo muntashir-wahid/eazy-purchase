@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const Category = require("./categoryModel");
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -24,6 +26,20 @@ const productSchema = new mongoose.Schema(
       enum: {
         values: ["published", "unpublished", "damaged", "stockOut"],
         message: "Expected status: published, unpublished, damaged, stockOut",
+      },
+    },
+    category: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "Category",
+      required: [true, "A product must have a valid category id"],
+      validate: {
+        validator: async function () {
+          const hasCategory = await Category.findById(this.category.toString());
+
+          return !!hasCategory;
+        },
+
+        message: "Provide a valid category id",
       },
     },
     brand: String,
@@ -54,6 +70,15 @@ const productSchema = new mongoose.Schema(
 productSchema.virtual("discountedPrice").get(function () {
   const discount = (this.price * this.discount) / 100;
   return this.price - discount;
+});
+
+productSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "category",
+    select: "-__v",
+  });
+
+  next();
 });
 
 const Product = mongoose.model("Product", productSchema);
