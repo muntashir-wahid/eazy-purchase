@@ -1,6 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 
+const AppError = require("./util/appError");
+const globalErrorHandler = require("./controllers/errorController");
+
 const productRouter = require("./routes/productRouter");
 const categoryRouter = require("./routes/categoryRouter");
 
@@ -17,17 +20,15 @@ app.use("/api/v1/categories", categoryRouter);
 
 // Middleware for handling unhandled routes
 app.all("*", (req, res, next) => {
-  const message = `Can't find ${req.originalUrl} for ${req.method} on the sever`;
-
-  next(message);
+  next(
+    new AppError(
+      `Can't find ${req.originalUrl} for ${req.method} on the sever`,
+      404
+    )
+  );
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
-  res.status(500).json({
-    status: "error",
-    error: err,
-  });
-});
+app.use(globalErrorHandler);
 
 module.exports = app;
