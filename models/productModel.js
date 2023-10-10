@@ -19,6 +19,8 @@ const productSchema = new mongoose.Schema(
     discount: {
       type: Number,
       default: 0,
+      min: [0, "Discount should be more or equal 0"],
+      max: [99, "Discount should be less or equal 99"],
     },
     status: {
       type: String,

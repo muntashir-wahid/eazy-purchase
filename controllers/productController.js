@@ -1,58 +1,15 @@
-const catchAsync = require("../util/catchAsync");
+const {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} = require("./handlerFactory");
 const Product = require("./../models/productModel");
 
-exports.createProduct = catchAsync(async (req, res) => {
-  const product = await Product.create(req.body);
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      product,
-    },
-  });
-});
-
-exports.getAllProducts = catchAsync(async (req, res) => {
-  const products = await Product.find();
-
-  res.status(200).json({
-    status: "success",
-    results: products.length,
-    data: {
-      products,
-    },
-  });
-});
-
-exports.getProduct = catchAsync(async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      product,
-    },
-  });
-});
-
-exports.updateProduct = catchAsync(async (req, res) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      product,
-    },
-  });
-});
-
-exports.deleteProduct = catchAsync(async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
+// Basic CRUD
+exports.createProduct = createOne(Product, "product");
+exports.getAllProducts = getAll(Product, "products");
+exports.getProduct = getOne(Product, "product");
+exports.updateProduct = updateOne(Product, "product");
+exports.deleteProduct = deleteOne(Product, "product");
