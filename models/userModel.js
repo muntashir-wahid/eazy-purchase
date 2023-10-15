@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Password is required"],
     minLength: [8, "Password must be more or equal 8 characters"],
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -42,11 +43,13 @@ const userSchema = new mongoose.Schema({
       values: ["user", "admin"],
       message: "Provide a valid user type",
     },
+    select: false,
   },
   createdAt: {
     type: Date,
     default: Date.now(),
   },
+  photo: String,
   status: {
     type: String,
     default: "active",
@@ -54,6 +57,7 @@ const userSchema = new mongoose.Schema({
       values: ["active", "suspended"],
       message: "Provide a valid status",
     },
+    select: false,
   },
 });
 
@@ -67,6 +71,12 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
 
   next();
+});
+
+userSchema.post("save", function (doc) {
+  doc.password = undefined;
+  doc.role = undefined;
+  doc.status = undefined;
 });
 
 const User = mongoose.model("User", userSchema);
