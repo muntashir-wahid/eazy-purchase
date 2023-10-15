@@ -1,5 +1,6 @@
-const AppError = require("./../util/appError");
-const catchAsync = require("./../util/catchAsync");
+const APIFeatures = require("./../utils/apiFeatures");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 
 exports.createOne = (Model, docName) => {
   return catchAsync(async (req, res, next) => {
@@ -16,7 +17,13 @@ exports.createOne = (Model, docName) => {
 
 exports.getAll = (Model, docName) => {
   return catchAsync(async (req, res, next) => {
-    const docs = await Model.find();
+    const features = new APIFeatures(Model.find(), req.query)
+      .filter()
+      .search()
+      .project()
+      .paginate();
+
+    const docs = await features.query;
 
     res.status(200).json({
       status: "success",
