@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
@@ -46,6 +47,26 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  status: {
+    type: String,
+    default: "active",
+    enum: {
+      values: ["active", "suspended"],
+      message: "Provide a valid status",
+    },
+  },
+});
+
+userSchema.pre("save", async function (next) {
+  // Exit the function if document is not modified or newly created
+  if (!this.isModified("password")) next();
+
+  const hashedPassword = await bcrypt.hash(this.password, 12);
+
+  this.password = hashedPassword;
+  this.passwordConfirm = undefined;
+
+  next();
 });
 
 const User = mongoose.model("User", userSchema);
