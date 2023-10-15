@@ -4,8 +4,9 @@ const morgan = require("morgan");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 
-const productRouter = require("./routes/productRouter");
 const categoryRouter = require("./routes/categoryRouter");
+const productRouter = require("./routes/productRouter");
+const userRouter = require("./routes/userRouter");
 
 const app = express();
 
@@ -17,6 +18,7 @@ if (process.env.NODE_ENV === "development") {
 // All routes
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/users", userRouter);
 
 // Middleware for handling unhandled routes
 app.all("*", (req, res, next) => {
