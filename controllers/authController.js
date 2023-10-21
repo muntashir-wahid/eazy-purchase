@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+const AppError = require("./../utils/appError");
 const catchAsync = require("./../utils/catchAsync");
 const User = require("./../models/userModel");
 
@@ -10,7 +11,7 @@ const signToken = ({ id }) => {
   });
 };
 
-exports.signup = catchAsync(async (req, res, nex) => {
+exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -26,5 +27,30 @@ exports.signup = catchAsync(async (req, res, nex) => {
       token,
       user: newUser,
     },
+  });
+});
+
+exports.login = catchAsync(async (req, res, next) => {
+  // Guard clause to check if both email and password is available
+  if (!req.body.email || !req.body.password) {
+    next(new AppError("Please provide email and password", 400));
+  }
+
+  // Get the user
+  const user = await User.findOne({ email: req.body.email }).select(
+    "+password"
+  );
+
+  // Check if the user exits and password is correct
+  if (!user || !(await user.checkPasswordIsCorrect(req.body.password))) {
+    return next(new AppError("No user found with given credentials", 401));
+  }
+
+  // Create a new token
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: "success",
+    token,
   });
 });
