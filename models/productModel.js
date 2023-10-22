@@ -26,8 +26,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "published",
       enum: {
-        values: ["published", "unpublished", "damaged", "stockOut"],
-        message: "Expected status: published, unpublished, damaged, stockOut",
+        values: ["published", "unpublished"],
+        message: "Expected status: published, unpublished",
+      },
+      get: function () {
+        return this.stock > 0 ? "published" : "unpublished";
       },
     },
     category: {
@@ -62,9 +65,11 @@ const productSchema = new mongoose.Schema(
   {
     toJSON: {
       virtuals: true,
+      getters: true,
     },
     toObject: {
       virtuals: true,
+      getters: true,
     },
   }
 );
@@ -73,15 +78,6 @@ productSchema.virtual("discountedPrice").get(function () {
   const discount = (this.price * this.discount) / 100;
   return this.price - discount;
 });
-
-// productSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "category",
-//     select: "-__v",
-//   });
-
-//   next();
-// });
 
 const Product = mongoose.model("Product", productSchema);
 
