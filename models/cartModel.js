@@ -23,7 +23,6 @@ const cartSchema = new mongoose.Schema(
       },
     ],
   },
-
   {
     toJSON: {
       virtuals: true,
@@ -34,38 +33,32 @@ const cartSchema = new mongoose.Schema(
   }
 );
 
-cartSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "products",
-    populate: {
-      path: "item",
-      model: "Product",
-      select: "name price discount discountPrice",
-    },
-  });
-
-  next();
-});
-
 cartSchema.methods.addProductToCart = function (newProduct) {
-  console.log("Cart Items", this, newProduct);
+  // Find the existing product's index
+  const alreadyAddedProductIndex = this.products.findIndex(
+    (product) => product.item.toString() === newProduct.product
+  );
 
-  // let updatedCart;
+  if (alreadyAddedProductIndex !== -1) {
+    // If existing products quantity reached to 0
+    if (+newProduct.quantity === 0) {
+      this.products = this.products.filter(
+        (product) => product.item.toString() !== newProduct.product
+      );
 
-  // const updatedItems = this.products.push({
-  //   item: newProduct.product,
-  //   quantity: newProduct.quantity,
-  // });
+      return;
+    }
 
-  const updatedCart = {
-    user: this.user._id.toString(),
-    products: [
-      ...this.products,
-      { item: newProduct.product, quantity: newProduct.quantity },
-    ],
-  };
+    // Increment the products quantity
+    this.products[alreadyAddedProductIndex].quantity = newProduct.quantity;
+  } else {
+    // Add the new product into the cart
 
-  return updatedCart;
+    this.products.push({
+      item: newProduct.product,
+      quantity: newProduct.quantity,
+    });
+  }
 };
 
 const Cart = mongoose.model("Cart", cartSchema);
