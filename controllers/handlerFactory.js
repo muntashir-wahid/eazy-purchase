@@ -15,7 +15,7 @@ exports.createOne = (Model, docName) => {
   });
 };
 
-exports.getAll = (Model, docName) => {
+exports.getAll = (Model, docName, populateOptions) => {
   return catchAsync(async (req, res, next) => {
     const features = new APIFeatures(Model.find(), req.query)
       .filter()
@@ -23,7 +23,13 @@ exports.getAll = (Model, docName) => {
       .project()
       .paginate();
 
-    const docs = await features.query;
+    let docs;
+
+    if (populateOptions) {
+      docs = await features.query.populate(populateOptions);
+    } else {
+      docs = await features.query;
+    }
 
     res.status(200).json({
       status: "success",
@@ -35,9 +41,15 @@ exports.getAll = (Model, docName) => {
   });
 };
 
-exports.getOne = (Model, docName) => {
+exports.getOne = (Model, docName, populateOptions) => {
   return catchAsync(async (req, res, next) => {
-    const doc = await Model.findById(req.params.id);
+    let doc;
+
+    if (populateOptions) {
+      doc = await Model.findById(req.params.id).populate(populateOptions);
+    } else {
+      doc = await Model.findById(req.params.id);
+    }
 
     // Guard clause for not found document
     if (!doc) {

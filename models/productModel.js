@@ -74,14 +74,14 @@ productSchema.virtual("discountedPrice").get(function () {
   return this.price - discount;
 });
 
-productSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "category",
-    select: "-__v",
-  });
+// productSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "category",
+//     select: "-__v",
+//   });
 
-  next();
-});
+//   next();
+// });
 
 const Product = mongoose.model("Product", productSchema);
 
