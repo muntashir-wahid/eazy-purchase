@@ -6,6 +6,7 @@ const globalErrorHandler = require("./controllers/errorController");
 
 const cartRouter = require("./routes/cartRouter");
 const categoryRouter = require("./routes/categoryRouter");
+const orderRouter = require("./routes/orderRouter");
 const productRouter = require("./routes/productRouter");
 const userRouter = require("./routes/userRouter");
 
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV === "development") {
 // All routes
 app.use("/api/v1/carts", cartRouter);
 app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 
