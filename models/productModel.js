@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       require: [true, "A product must have a name"],
       minLength: [3, "A product name should be more or equal 3 characters"],
-      maxLength: [40, "A product name should be less or equal 40 characters"],
+      maxLength: [60, "A product name should be less or equal 60 characters"],
       trim: true,
     },
     price: {
@@ -22,17 +22,6 @@ const productSchema = new mongoose.Schema(
       min: [0, "Discount should be more or equal 0"],
       max: [99, "Discount should be less or equal 99"],
     },
-    status: {
-      type: String,
-      default: "published",
-      enum: {
-        values: ["published", "unpublished"],
-        message: "Expected status: published, unpublished",
-      },
-      get: function () {
-        return this.stock > 0 ? "published" : "unpublished";
-      },
-    },
     category: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "Category",
@@ -43,16 +32,18 @@ const productSchema = new mongoose.Schema(
 
           return !!hasCategory;
         },
-
         message: "Provide a valid category id",
       },
     },
+    status: {
+      type: String,
+      default: "published",
+      enum: ["published", "unpublished"],
+      select: false,
+    },
     brand: String,
     image: String,
-    stock: {
-      type: Number,
-      default: 0,
-    },
+    description: String,
     rating: {
       type: Number,
       default: 4,
@@ -77,6 +68,10 @@ const productSchema = new mongoose.Schema(
 productSchema.virtual("discountedPrice").get(function () {
   const discount = (this.price * this.discount) / 100;
   return this.price - discount;
+});
+
+productSchema.virtual("stockStatus").get(function () {
+  return this.stock > 0 ? "in_stock" : "out_of_stock";
 });
 
 const Product = mongoose.model("Product", productSchema);
