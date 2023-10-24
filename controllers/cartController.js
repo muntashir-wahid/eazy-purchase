@@ -9,11 +9,14 @@ exports.createCart = catchAsync(async (req, res, next) => {
   const isProductAvailable = await Product.findOne({
     _id: req.body.product,
     status: "published",
+    stock: { $gt: 0 },
   });
 
   // Check if the product is available
-  if (!isProductAvailable) {
-    return next(new AppError("Can't find any product!", 400));
+  if (!isProductAvailable || isProductAvailable.stock - req.body.quantity < 0) {
+    return next(
+      new AppError("Can't find any product or insufficient stock!", 400)
+    );
   }
 
   let cart = {

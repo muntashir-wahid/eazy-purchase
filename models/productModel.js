@@ -35,6 +35,11 @@ const productSchema = new mongoose.Schema(
         message: "Provide a valid category id",
       },
     },
+    stock: {
+      type: Number,
+      default: 0,
+      min: [0, "Stock must be more then 0"],
+    },
     status: {
       type: String,
       default: "published",

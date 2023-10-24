@@ -34,6 +34,13 @@ const cartSchema = new mongoose.Schema(
   }
 );
 
+cartSchema.methods.isStockAvailableAfter = function (
+  cartQuantity,
+  productStock
+) {
+  return productStock - cartQuantity > 0;
+};
+
 cartSchema.methods.addProductToCart = function (newProduct) {
   // Find the existing product's index
   const alreadyAddedProductIndex = this.products.findIndex(

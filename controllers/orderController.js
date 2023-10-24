@@ -9,17 +9,19 @@ exports.createOrder = catchAsync(async (req, res, next) => {
     populate: {
       path: "item",
       model: "Product",
-      select: "name price discount stock",
     },
   });
 
-  const bulkUpdateDoc = cart.products.map((product) => {
+  const productsArr = JSON.parse(JSON.stringify(cart.products));
+
+  const bulkUpdateDoc = productsArr.map((product) => {
     const result = {
-      updateOne: {
+      replaceOne: {
         filter: {
           _id: product.item._id.toString(),
         },
-        update: {
+        replacement: {
+          ...product.item,
           stock: product.item.stock - product.quantity,
         },
       },
@@ -37,11 +39,11 @@ exports.createOrder = catchAsync(async (req, res, next) => {
       0
     ),
   };
+  await Products.bulkWrite(bulkUpdateDoc);
 
   const newOrder = await Order.create(order);
 
   await Cart.findByIdAndDelete(cart.id);
-  await Products.bulkWrite(bulkUpdateDoc);
 
   res.status(201).json({
     status: "success",
