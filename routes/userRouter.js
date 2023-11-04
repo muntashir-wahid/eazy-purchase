@@ -4,6 +4,7 @@ const {
   createUser,
   deleteUser,
   getAllUsers,
+  getMe,
   getUser,
   updateUser,
 } = require("./../controllers/userController");
@@ -14,6 +15,8 @@ const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/login", login);
+
+router.get("/me", protect, getMe);
 
 router.use(protect, restrictTo("admin"));
 
