@@ -12,6 +12,12 @@ const populateOptions = {
   select: "-__v",
 };
 
+exports.popularProducts = (req, res, next) => {
+  req.query = { price: { lt: "100" }, limit: "9" };
+
+  next();
+};
+
 // Basic CRUD
 exports.createProduct = createOne(Product, "product");
 exports.getAllProducts = getAll(Product, "products", populateOptions);

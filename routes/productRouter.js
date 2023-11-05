@@ -5,11 +5,14 @@ const {
   deleteProduct,
   getAllProducts,
   getProduct,
+  popularProducts,
   updateProduct,
 } = require("./../controllers/productController");
 const { protect, restrictTo } = require("./../controllers/authController");
 
 const router = express.Router();
+
+router.get("/popular-products", popularProducts, getAllProducts);
 
 router
   .route("/")
