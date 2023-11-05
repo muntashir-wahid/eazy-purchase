@@ -76,7 +76,7 @@ productSchema.virtual("discountedPrice").get(function () {
 });
 
 productSchema.virtual("stockStatus").get(function () {
-  return this.stock > 0 ? "in_stock" : "out_of_stock";
+  return this.stock > 0 ? "In Stock" : "Out of Stock";
 });
 
 const Product = mongoose.model("Product", productSchema);
