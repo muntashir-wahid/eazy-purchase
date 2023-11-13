@@ -48,7 +48,7 @@ exports.getCart = catchAsync(async (req, res, next) => {
     populate: {
       path: "item",
       model: "Product",
-      select: "name price discount discountPrice",
+      select: "name price discount stock",
     },
   });
 
